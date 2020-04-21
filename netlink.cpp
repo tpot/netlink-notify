@@ -89,6 +89,13 @@ class Netlink: public StreamingWorker
 				return;
 			}
 
+                        int on = 1;
+                        if (mnl_socket_setsockopt(nl_, NETLINK_LISTEN_ALL_NSID, &on, sizeof(on)) < 0) {
+                                std::cout << "setsockopt failed" << std::endl;
+                                SetErrorMessage("Cannot setsockopt to NETLINK_LISTEN_ALL_NSID");
+                                return;
+                        }
+
 			portid_ = MNL_SOCKET_AUTOPID;
 
 			if (mnl_socket_bind(nl_, RTMGRP_LINK | RTMGRP_IPV4_ROUTE | RTMGRP_IPV6_ROUTE | RTMGRP_IPV4_IFADDR | RTMGRP_IPV6_IFADDR, portid_) < 0) {
