@@ -105,8 +105,8 @@ class Netlink: public StreamingWorker
 		void Execute(const progress_type& progress) {
 			loop_ = uv_loop_new();
 
-			async_.data = this;
-			uv_async_init(loop_, &async_, [](uv_async_t * a) {
+			async.data = this;
+			uv_async_init(loop_, &async, [](uv_async_t * a) {
 				auto self = reinterpret_cast<Netlink *>(a->data);
 				self->drain_queue();
 			});
