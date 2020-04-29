@@ -3,9 +3,9 @@
 const worker = require("streaming-worker");
 const path = require("path");
 
-let addon_path = path.join(__dirname, "build/Release/netlink_worker");
+function Netlink(options) {
+    const addon_path = path.join(__dirname, "build/Release/netlink_worker");
+    return worker(addon_path, options);
+}
 
-const netlink = worker(addon_path);
-
-module.exports = netlink;
-
+module.exports = {Netlink};

@@ -1,6 +1,7 @@
 "use strict"; 
 
-let netlink = require('netlink-notify');
+const {Netlink} = require('../netlink.js');
+let netlink = Netlink({})
 
 netlink.from.on('route', function(factor){
 	console.log("route: " + factor);
