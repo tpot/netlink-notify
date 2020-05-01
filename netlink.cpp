@@ -137,8 +137,8 @@ class Netlink: public StreamingWorker
 				self->pollcb(((struct cbdata *) h->data)->progress, h, s, e);
 			});
 
-
 			uv_run(loop_, UV_RUN_DEFAULT);
+printf(">>>>> EXECUTE exited\n");
 		}
 
 		/*
@@ -218,8 +218,7 @@ class Netlink: public StreamingWorker
 		{
 			int retval = MNL_CB_OK;
 			json j;
-
-			//printf("Datacb: %d\n", nlh->nlmsg_type);
+printf(">>> data_cb, nlmsg_type=%d\n", nlh->nlmsg_type);
 
 			switch (nlh->nlmsg_type) {
 				case RTM_NEWROUTE:
@@ -363,7 +362,7 @@ class Netlink: public StreamingWorker
 
 			ret["type"] = "addr";
 			ret["event"] = nlh->nlmsg_type == RTM_NEWADDR ? (nlh->nlmsg_seq ? "get" : "new") : "delete";
-			ret["timestamp"] = get_iso8601_timestamp();
+			//ret["timestamp"] = get_iso8601_timestamp();
 
 			ret["data"]["family"] = ifa->ifa_family == AF_INET ? "ipv4" : "ipv6";
 			ret["data"]["prefixlen"] = ifa->ifa_prefixlen;
@@ -470,6 +469,8 @@ class Netlink: public StreamingWorker
 			struct ifinfomsg *ifm = reinterpret_cast<struct ifinfomsg *>(mnl_nlmsg_get_payload(nlh));
 
 			json ret;
+			ret["event"] = nlh->nlmsg_type == RTM_NEWLINK ? (nlh->nlmsg_seq ? "get" : "new") : "delete";
+			//ret["timestamp"] = get_iso8601_timestamp();
 
 			/*
 			printf("index=%d type=%d flags=%d family=%d ",
@@ -633,7 +634,7 @@ class Netlink: public StreamingWorker
 
 			ret["type"] = "link";
 			ret["event"] = nlh->nlmsg_type == RTM_NEWLINK ? (nlh->nlmsg_seq ? "get" : "new") : "delete";
-			ret["timestamp"] = get_iso8601_timestamp();
+//			ret["timestamp"] = get_iso8601_timestamp();
 
 			return std::make_tuple(MNL_CB_OK, ret);
 		}
@@ -646,7 +647,7 @@ class Netlink: public StreamingWorker
 			json reply;
 
 			reply["type"] = "route";
-			reply["timestamp"] = get_iso8601_timestamp();
+			//reply["timestamp"] = get_iso8601_timestamp();
 
 			reply["event"] = nlh->nlmsg_type == RTM_NEWROUTE ? (nlh->nlmsg_seq ? "get" : "new") : "delete";
 
@@ -962,7 +963,6 @@ class Netlink: public StreamingWorker
 			json ret;
 
 			if (tb[RTA_TABLE]) {
-				//printf("table=%u ", mnl_attr_get_u32(tb[RTA_TABLE]));
 
 				ret["table"] = [&]() -> std::string {
 					int table = mnl_attr_get_u32(tb[RTA_TABLE]);
